@@ -1,0 +1,11 @@
+{
+  "name": "web",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "frontend/web/src",
+  "projectType": "application",
+  "targets": {
+    "dev": { "command": "npm run dev --workspace @ubwenzi/web" },
+    "build": { "command": "npm run build --workspace @ubwenzi/web", "outputs": ["{workspaceRoot}/frontend/web/dist"] },
+    "typecheck": { "command": "npm run typecheck --workspace @ubwenzi/web" }
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "name": "@ubwenzi/api",
+  "private": true,
+  "version": "0.1.0",
+  "scripts": {
+    "dev": "nest start --watch",
+    "build": "nest build",
+    "start": "node dist/main.js",
+    "typecheck": "tsc --noEmit",
+    "lint": "echo \"Lint not configured yet\"",
+    "test": "jest"
+  }
+}

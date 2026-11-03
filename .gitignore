@@ -1,5 +1,7 @@
 node_modules/
+**/node_modules/
 dist/
+**/dist/
 .vite/
 *.tsbuildinfo
 .env
@@ -7,3 +9,19 @@ dist/
 !.env.example
 .DS_Store
 Thumbs.db
+coverage/
+.nx/
+.expo/
+**/.expo/
+android/.gradle/
+frontend/mobile/android/.gradle/
+frontend/mobile/ios/Pods/
+releases/**
+!releases/README.md
+*.apk
+*.aab
+*.ipa
+*.jks
+*.keystore
+*.p12
+*.mobileprovision
