@@ -41,7 +41,7 @@ Le module `backend/api/src/platform/database/database.module.ts` est actuellemen
 - Pas de revue sécurité complète.
 
 ## Étapes immédiates
-1. Compléter DatabaseModule avec pool PostgreSQL réel et configuration TLS sûre.
+1. Tester DatabaseModule avec un PostgreSQL de TEST et vérifier la configuration TLS.
 2. Mettre à jour README et scripts.
 3. Générer le lockfile racine depuis la racine du monorepo avec Node 22/npm 10.
 4. Ajouter une CI utilisant `npm ci`, typecheck et build pour Web + API.
