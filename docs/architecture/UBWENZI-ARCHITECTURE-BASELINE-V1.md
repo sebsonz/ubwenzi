@@ -318,3 +318,190 @@ L'architecture est prête à être implémentée lorsque :
 - structure dépôt et contrôles CI sont décidés ;
 - modèle waitlist et flux privacy sont revus ;
 - le visuel validé est protégé et les responsabilités d'implémentation sont claires.
+
+
+## 15. Structure professionnelle détaillée du monorepo (référence cible)
+
+Cette section remplace toute ambiguïté entre les anciens noms frontend/backend et le modèle apps. Il n'existe qu'une seule convention : les applications exécutables vivent dans `apps/`, les bibliothèques partagées dans `packages/`. Aucun second dossier `frontend/` ou `backend/` à la racine.
+
+```text
+ubwenzi/
+├── apps/
+│   ├── web/                              # Application React : public, waitlist, membre, administration
+│   │   ├── public/
+│   │   ├── src/
+│   │   │   ├── app/                      # bootstrap, providers, router, guards, layouts
+│   │   │   ├── surfaces/
+│   │   │   │   ├── marketing/            # landing, pages publiques, contenu
+│   │   │   │   ├── waitlist/             # parcours de préinscription
+│   │   │   │   ├── member/               # espace membre
+│   │   │   │   ├── platform-admin/       # administration générale
+│   │   │   │   └── trust-safety-admin/   # modération et sécurité
+│   │   │   ├── modules/                  # composition UI par domaine métier
+│   │   │   ├── shared/
+│   │   │   │   ├── components/
+│   │   │   │   ├── hooks/
+│   │   │   │   ├── layouts/
+│   │   │   │   ├── lib/
+│   │   │   │   └── styles/
+│   │   │   ├── assets/
+│   │   │   └── tests/
+│   │   ├── index.html
+│   │   ├── vite.config.ts
+│   │   └── package.json
+│   │
+│   ├── api/                              # API HTTP Node.js / TypeScript
+│   │   ├── src/
+│   │   │   ├── bootstrap/                # composition root, démarrage, configuration
+│   │   │   ├── platform/                 # HTTP, middleware, auth context, errors, guards
+│   │   │   ├── modules/
+│   │   │   │   ├── foundation/
+│   │   │   │   ├── identity/
+│   │   │   │   ├── profiles/
+│   │   │   │   ├── preferences/
+│   │   │   │   ├── discovery/
+│   │   │   │   ├── matching/
+│   │   │   │   ├── messaging/
+│   │   │   │   ├── trust/
+│   │   │   │   ├── safety/
+│   │   │   │   ├── monetization/
+│   │   │   │   ├── payments/
+│   │   │   │   ├── events/
+│   │   │   │   ├── administration/
+│   │   │   │   ├── waitlist/
+│   │   │   │   └── notifications/
+│   │   │   ├── infrastructure/           # implémentations techniques et adaptateurs
+│   │   │   │   ├── database/
+│   │   │   │   ├── auth/
+│   │   │   │   ├── storage/
+│   │   │   │   ├── email/
+│   │   │   │   ├── sms/
+│   │   │   │   ├── payments/
+│   │   │   │   ├── realtime/
+│   │   │   │   └── queue/
+│   │   │   └── main.ts
+│   │   ├── tests/
+│   │   │   ├── integration/
+│   │   │   ├── contract/
+│   │   │   └── security/
+│   │   └── package.json
+│   │
+│   └── worker/                           # Tâches asynchrones, sans routes publiques
+│       ├── src/
+│       │   ├── bootstrap/
+│       │   ├── jobs/
+│       │   │   ├── email-delivery/
+│       │   │   ├── notification-delivery/
+│       │   │   ├── media-processing/
+│       │   │   ├── moderation/
+│       │   │   ├── payment-reconciliation/
+│       │   │   └── subscription-lifecycle/
+│       │   ├── consumers/
+│       │   └── main.ts
+│       └── package.json
+│
+├── packages/
+│   ├── api-contracts/                    # OpenAPI, DTOs, erreurs, pagination
+│   ├── validation/                       # Schémas de validation partagés
+│   ├── design-system/                    # tokens et composants UBWENZI
+│   ├── i18n/                             # anglais/français
+│   ├── api-client/                       # client HTTP typé pour le frontend
+│   ├── permissions/                      # identifiants de permissions et types partagés
+│   ├── config/                           # configurations TypeScript, lint, test
+│   └── observability/                    # conventions de logs et traces
+│
+├── supabase/
+│   ├── migrations/                       # migrations SQL versionnées
+│   ├── seed/                             # référentiels et données non sensibles
+│   ├── functions/                        # uniquement fonctions Edge justifiées
+│   └── tests/                            # tests SQL/RLS
+│
+├── docs/
+│   ├── architecture/
+│   ├── adr/                              # Architecture Decision Records
+│   ├── product/
+│   ├── api/
+│   ├── security/
+│   ├── privacy/
+│   └── operations/
+│
+├── tests/
+│   ├── e2e/
+│   ├── performance/
+│   └── fixtures/
+│
+├── .github/
+│   └── workflows/
+├── scripts/
+├── .env.example
+├── .gitignore
+├── package.json                          # workspace racine
+├── package-lock.json                     # lockfile unique
+├── tsconfig.base.json
+└── README.md
+```
+
+### 15.1 Structure interne obligatoire d'un module backend
+
+Chaque bounded context dans `apps/api/src/modules/<module>/` suit cette structure, adaptée au besoin réel du domaine :
+
+```text
+waitlist/
+├── domain/
+│   ├── entities/
+│   ├── value-objects/
+│   ├── events/
+│   ├── policies/
+│   └── errors/
+├── application/
+│   ├── commands/
+│   ├── queries/
+│   ├── use-cases/
+│   ├── ports/
+│   └── dto/
+├── infrastructure/
+│   ├── persistence/
+│   └── adapters/
+├── http/
+│   ├── routes/
+│   ├── controllers/
+│   ├── validators/
+│   └── presenters/
+├── tests/
+│   ├── unit/
+│   └── integration/
+└── index.ts
+```
+
+Les dossiers ne doivent pas être créés artificiellement lorsqu'ils sont vides. En revanche, les frontières domain/application/infrastructure/http doivent être respectées dès qu'un module devient métier.
+
+### 15.2 Structure interne d'un module frontend
+
+```text
+waitlist/
+├── api/                 # appels API spécifiques au domaine
+├── components/          # composants propres au domaine
+├── hooks/               # hooks d'orchestration UI
+├── pages/               # pages et écrans
+├── schemas/             # validation côté interface
+├── types/               # types UI locaux
+├── utils/               # fonctions de présentation locales
+└── index.ts             # surface publique du module
+```
+
+Le frontend ne contient aucune règle d'autorisation faisant autorité. Les guards améliorent l'expérience, mais chaque endpoint vérifie réellement l'identité, les permissions et le périmètre d'accès côté backend.
+
+### 15.3 Workspaces et outillage
+
+- npm workspaces au niveau racine, avec un seul lockfile.
+- TypeScript strict et configurations partagées.
+- Scripts racine uniformes : `dev`, `build`, `typecheck`, `lint`, `test`, `test:integration`.
+- Chaque application garde son propre `package.json` et ses commandes ciblées.
+- Dépendances partagées uniquement si elles ont une vraie raison d'être partagées.
+- Les packages frontend ne doivent pas importer le code serveur ; les packages backend ne doivent pas dépendre des composants React.
+- Les secrets restent dans les environnements d'exécution ; seuls les exemples de variables sont versionnés.
+
+### 15.4 Règles de migration du dépôt actuel
+
+Le frontend Vite créé à la racine pendant l'initialisation est une fondation provisoire. Il sera déplacé une seule fois vers `apps/web` après approbation de cette structure. Le déplacement sera réalisé dans un commit dédié, avec mise à jour des scripts, chemins TypeScript, Vite et CI. Aucun backend métier ne sera ajouté à la racine sous un second modèle.
+
