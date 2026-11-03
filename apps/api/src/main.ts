@@ -20,6 +20,7 @@ async function bootstrap(): Promise<void> {
     { bufferLogs: true },
   );
 
+  app.enableShutdownHooks();
   app.setGlobalPrefix("api/v1");
   app.enableCors({
     origin: (process.env.CORS_ALLOWED_ORIGINS ?? "")
