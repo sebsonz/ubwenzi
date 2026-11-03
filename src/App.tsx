@@ -1,4 +1,5 @@
 import { useState } from "react";
+import type { FormEvent } from "react";
 
 function BrandMark({ small = false }: { small?: boolean }) {
   return <span className={`brand-mark${small ? " brand-mark--small" : ""}`} aria-hidden="true">
@@ -17,7 +18,6 @@ function PeopleIcon() {
 function HeartIcon() {
   return <svg viewBox="0 0 32 32" fill="currentColor" aria-hidden="true"><path d="M16 27.2 5.2 17C-.4 11.6 7.3 2.4 13 7.8l3 2.8 3-2.8c5.7-5.4 13.4 3.8 7.8 9.2L16 27.2Z"/></svg>;
 }
-
 const profiles = [
   { name: "Mariam", age: 24, city: "Lagos", initials: "M", tone: "rose" },
   { name: "Tobi", age: 29, city: "Lekki", initials: "T", tone: "sand" },
@@ -31,7 +31,7 @@ export default function App() {
   const [consent, setConsent] = useState(false);
   const [message, setMessage] = useState("");
 
-  function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+  function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setMessage("Preview only: secure registration will be enabled after the waitlist API and email verification are connected. No data has been submitted.");
   }
@@ -44,7 +44,6 @@ export default function App() {
       </nav>
       <div className="header-actions"><a className="login-link" href="#waitlist">Log in</a><a className="button button--small" href="#waitlist">Join the waitlist</a></div>
     </header>
-
     <section className="hero" id="home">
       <div className="hero-copy">
         <p className="eyebrow"><span className="eyebrow-dot" /> A more intentional way to connect</p>
@@ -70,7 +69,6 @@ export default function App() {
         </div>
       </div>
     </section>
-
     <section className="preview-section" id="discover">
       <div className="preview-heading"><div><p className="eyebrow">A glimpse of what is ahead</p><h2>Designed for <em>meaningful</em> moments.</h2></div><p>Thoughtful profiles. Intentional discovery. Conversations that can become something real.</p></div>
       <div className="screen-row">
@@ -80,7 +78,6 @@ export default function App() {
         <article className="screen-card messages-card"><div className="screen-topline"><span>9:41</span><span>•••</span></div><h3>A conversation begins</h3><p className="message-bubble">Hi! What is something you love discovering about a new person?</p><p className="message-bubble message-bubble--out">The little things. Stories, music, and shared laughter.</p><p className="message-bubble">That sounds like a good place to start ✨</p></article>
       </div>
     </section>
-
     <section className="waitlist-section" id="waitlist">
       <div className="waitlist-copy"><p className="eyebrow">Lagos, we're getting ready</p><h2>Your next meaningful connection starts <em>here.</em></h2><p>Be among the first to hear when UBWENZI opens its doors in Lagos. Join the early access list.</p><div className="waitlist-note"><BrandMark small/><span>No pressure. Just the first invitation when we're ready.</span></div></div>
       <form className="waitlist-form" onSubmit={handleSubmit}>
@@ -93,7 +90,6 @@ export default function App() {
         <small>We will only use your details for waitlist communication. You can unsubscribe at any time.</small>
       </form>
     </section>
-
     <footer className="site-footer" id="how-it-works"><a className="brand" href="#home"><BrandMark small/><span>UBWENZI</span></a><span>Real connections. Meaningful relationships.</span><span>© {new Date().getFullYear()} UBWENZI · Adults 18+</span></footer>
   </main>;
 }
