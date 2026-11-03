@@ -1,0 +1,11 @@
+project_id = "ubwenzi"
+
+[api]
+enabled = true
+# Domain schemas remain private and are accessed through the NestJS API.
+schemas = ["public", "graphql_public"]
+extra_search_path = ["public", "extensions"]
+max_rows = 1000
+
+[db]
+# Database major version is managed by the Supabase project configuration.
