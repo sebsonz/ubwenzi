@@ -12,11 +12,10 @@
   ],
   "scripts": {
     "dev": "nx run web:dev",
-    "build": "nx run-many -t build --all",
-    "typecheck": "nx run-many -t typecheck --all",
-    "lint": "nx run-many -t lint --all",
-    "test": "nx run-many -t test --all",
-    "test:integration": "nx run-many -t test:integration --all",
+    "build": "nx run web:build",
+    "typecheck": "nx run web:typecheck",
+    "lint": "npm run lint --workspace @ubwenzi/web",
+    "test": "npm run test --workspace @ubwenzi/web",
     "graph": "nx graph"
   },
   "devDependencies": { "nx": "^21.6.0", "typescript": "~5.8.3" }
