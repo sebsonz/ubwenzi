@@ -9,33 +9,46 @@ UBWENZI is a trust-first dating and social discovery platform for adults (18+), 
 - Serious relationships, friendship and intentional discovery.
 - Trust, privacy and safety are core product capabilities, never premium-only.
 - Launch sequence: waitlist → closed beta → public launch in Lagos.
-- English is the primary launch language; French is also supported in the product direction.
-- The first public acquisition experience is the waitlist, not full member registration.
+- English is the primary launch language; French is also supported.
+- The initial public acquisition experience is the waitlist, not full member registration.
 
-## Visual direction
+## Repository architecture
 
-The approved UBWENZI visual reference is the user-validated mockup: warm blush/peach background, deep plum typography, vivid fuchsia actions, heart-inspired brand mark, editorial hero composition, and mobile product previews. Implementations must preserve this visual identity rather than substitute a generic dating-app template.
+The repository is an npm workspaces + Nx monorepo:
 
-## Technical direction
+- `backend/api`: NestJS + Fastify HTTP API and modular monolith.
+- `backend/worker`: asynchronous processing and transactional Outbox consumers.
+- `frontend/web`: React + TypeScript + Vite; public, waitlist, member, platform admin, Trust & Safety and partner surfaces.
+- `frontend/mobile`: React Native + Expo shared Android/iOS source.
+- `packages/*`: cross-cutting shared libraries.
+- `supabase/`: versioned migrations, seeds and database tests.
+- `releases/`: compiled mobile deliverables; never committed to Git.
 
-Initial frontend foundation: React, TypeScript and Vite. Backend and waitlist persistence must be implemented separately with server-side validation, consent records, email verification, abuse prevention, and role-protected administration. A browser-only form must never be presented as a working registration system.
+See [official monorepo structure](docs/architecture/UBWENZI-MONOREPO-STRUCTURE-V1.md).
 
-## Current phase
+## Requirements
 
-P00 — Waitlist and field validation. Build the branded public landing experience first, then connect it to the secure waitlist API and administrative analytics. The repository is being initialized; no existing application code is being overwritten.
+- Node.js 22.x
+- npm 10+
+- Git
 
-## Run the frontend locally
+## Install
 
-Requirements: Node.js 22+ and npm.
+From the repository root:
 
 ```bash
 npm install
+```
+
+## Run the existing Web visual foundation
+
+```bash
 npm run dev
 ```
 
-The Vite development server listens on `http://localhost:3000`.
+Vite listens on `http://localhost:3000`.
 
-Quality checks:
+## Quality checks
 
 ```bash
 npm run typecheck
@@ -44,6 +57,6 @@ npm run build
 
 ## Important implementation boundary
 
-The current waitlist form is intentionally a non-submitting visual preview. It does not collect or persist personal data. Do not publish it as a live signup flow until the server-side waitlist endpoint, consent persistence, email verification, rate limiting/bot protection, unsubscribe/deletion workflows and protected admin tools have been implemented and tested.
+The current waitlist form remains a non-submitting visual preview. It does not collect or persist personal data. Do not publish it as a live signup flow until the server-side waitlist endpoint, consent persistence, email verification, rate limiting/bot protection, unsubscribe/deletion workflows and protected admin tools have been implemented and tested.
 
-The hero portrait and mobile screen artwork are currently CSS placeholders. Replace them with approved and licensed image assets matching `docs/design/visual-baseline.md` before public launch.
+The approved visual identity must be preserved. The hero portrait and mobile screen artwork are currently CSS placeholders; replace them only with approved and licensed assets matching `docs/design/visual-baseline.md` before public launch.
