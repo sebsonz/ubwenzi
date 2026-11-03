@@ -19,14 +19,14 @@ import { DATABASE_POOL } from "./database.tokens";
                 rejectUnauthorized:
                   process.env.DATABASE_SSL_REJECT_UNAUTHORIZED !== "false",
               }
-            : undefined;
+            : null;
 
         return new Pool({
           connectionString,
           max: Number(process.env.DATABASE_POOL_MAX ?? 10),
           connectionTimeoutMillis: 5_000,
           idleTimeoutMillis: 30_000,
-          ssl,
+          ...(ssl ? { ssl } : {}),
         });
       },
     },
