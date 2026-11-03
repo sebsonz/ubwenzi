@@ -42,7 +42,7 @@ export default function App() {
       <nav className="desktop-nav" aria-label="Main navigation">
         <a href="#home" className="active">Home</a><a href="#discover">Discover</a><a href="#how-it-works">How it works</a><a href="#values">Our values</a>
       </nav>
-      <div className="header-actions"><a className="login-link" href="#waitlist">Log in</a><a className="button button--small" href="#waitlist">Join the waitlist</a></div>
+      <div className="header-actions"><span className="login-link" aria-label="Member access coming soon">Member access soon</span><a className="button button--small" href="#waitlist">Join the waitlist</a></div>
     </header>
     <section className="hero" id="home">
       <div className="hero-copy">
