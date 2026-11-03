@@ -1,0 +1,11 @@
+{
+  "name": "api",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "backend/api/src",
+  "projectType": "application",
+  "targets": {
+    "dev": { "command": "npm run dev --workspace @ubwenzi/api" },
+    "build": { "command": "npm run build --workspace @ubwenzi/api", "outputs": ["{projectRoot}/dist"] },
+    "typecheck": { "command": "npm run typecheck --workspace @ubwenzi/api" }
+  }
+}
