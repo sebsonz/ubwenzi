@@ -23,3 +23,27 @@ Initial frontend foundation: React, TypeScript and Vite. Backend and waitlist pe
 ## Current phase
 
 P00 — Waitlist and field validation. Build the branded public landing experience first, then connect it to the secure waitlist API and administrative analytics. The repository is being initialized; no existing application code is being overwritten.
+
+## Run the frontend locally
+
+Requirements: Node.js 22+ and npm.
+
+```bash
+npm install
+npm run dev
+```
+
+The Vite development server listens on `http://localhost:3000`.
+
+Quality checks:
+
+```bash
+npm run typecheck
+npm run build
+```
+
+## Important implementation boundary
+
+The current waitlist form is intentionally a non-submitting visual preview. It does not collect or persist personal data. Do not publish it as a live signup flow until the server-side waitlist endpoint, consent persistence, email verification, rate limiting/bot protection, unsubscribe/deletion workflows and protected admin tools have been implemented and tested.
+
+The hero portrait and mobile screen artwork are currently CSS placeholders. Replace them with approved and licensed image assets matching `docs/design/visual-baseline.md` before public launch.
