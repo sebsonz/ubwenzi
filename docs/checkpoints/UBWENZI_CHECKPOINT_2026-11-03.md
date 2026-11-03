@@ -217,3 +217,42 @@ Ne pas lancer `npm install`, `npm ci`, `git merge`, `git reset --hard`, `git cle
 
 ---
 **Règle de continuité :** ce checkpoint sert de mémoire de travail. Toujours revalider l'état Git et les résultats CI en direct avant d'affirmer qu'une tâche est terminée.
+
+
+## 14. Résultat de la comparaison GitHub — audit approfondi du 2026-11-03
+
+Comparaisons de références confirmées par GitHub :
+- `main` → `chore/ubwenzi-monorepo-architecture` : 52 commits en avance, 0 en retard ; statut ahead.
+- `main` → `feat/d07-messaging-foundation` : 43 commits en avance, 0 en retard ; statut ahead.
+- `chore/ubwenzi-monorepo-architecture` → `feat/d07-messaging-foundation` : branches divergentes ; D07 a 25 commits propres et 34 commits de retard par rapport à la branche architecture. Leur merge-base est `9d7697e4b561b4acd92ff7058a70cf03e581763f`.
+- Ce résultat confirme qu'un merge direct ne serait pas une simple intégration linéaire. Faire une sélection de commits/fichiers et une intégration contrôlée.
+
+Fichiers D07 observés :
+- `.github/workflows/api-foundation.yml` : workflow API qui installe avec `npm install --prefix apps/api`, puis typecheck/build ; déclenché sur push de la branche D07 et pull_request. Il ne constitue pas encore la CI du monorepo npm workspaces.
+- `apps/api/package.json`, `apps/api/tsconfig.json`, `apps/api/src/main.ts`, `app.module.ts`, HealthModule/Controller, DatabaseModule/Service, `.env.example`.
+- `docs/adr/ADR-0002-approved-domain-catalog.md` : catalogue D00-D16 accepté, qui remplace l'ancien D00-D14.
+- `docs/architecture/ADR-0003-private-domain-schemas.md` : schémas privés, API backend et règles de migrations.
+- `docs/product/P00-waitlist-scope.md` : périmètre waitlist ; pas de formulaire live avant persistance, vérification email, protections et admin.
+- `supabase/config.toml` et `supabase/migrations/20261103000100_create_messaging_schema.sql`. Cette migration ne crée que le schéma privé `messaging`, sans table métier ; elle révoque les accès PUBLIC/anon/authenticated. Elle reste NON APPLIQUÉE et non autorisée à être appliquée à ce stade.
+
+Anomalies/conflits structurels :
+- Le `package.json` racine de la branche D07 reste `ubwenzi-web`, application Vite mono-package ; il ne correspond pas au monorepo Nx/workspaces.
+- D07 place l'API sous `apps/api`, alors que la convention retenue ADR-0004 est `backend/api`.
+- La branche architecture a la structure `backend/frontend`, mais ses manifests API/Worker sont placeholders ; il faut intégrer sélectivement la fondation API existante.
+- Ne pas reprendre le lockfile racine D07 ou le lockfile API isolé ; viser un seul lockfile racine après fusion contrôlée des manifests.
+- La recherche PR via l'intégration GitHub n'a retourné aucun élément ; le statut PR doit être vérifié dans GitHub UI ou avec un endpoint de liste PR adapté.
+- La présence d'un workflow dans le dépôt ne prouve pas qu'il a réussi. Aucun résultat CI vert n'a été établi pendant cet audit.
+
+## 15. Réconciliation documentaire enregistrée
+
+Nouvelle décision créée dans cette branche :
+- `docs/decisions/ADR-0005-architecture-reference-reconciliation.md`
+- Elle définit l'ordre d'autorité : ARCH-01..09, ADR-0002, ADR-0003, ADR-0004, ADR-0005, puis documents de synthèse et enfin documents historiques.
+- Elle confirme D00-D16 et la structure `backend/` + `frontend/`.
+- Elle marque les sections anciennes du baseline comme obsolètes à réviser, sans effacer leur historique.
+- Elle interdit l'import du manifeste Vite mono-package D07 et l'application automatique de la migration Messaging.
+
+Le cahier des charges MVP est conservé dans `docs/product/UBWENZI_CAHIER_DES_CHARGES_MVP_V1.md`. Son statut reste « consolidation pour revue », pas approbation finale de tous les éléments proposés.
+
+## 16. Prochaine action technique
+Créer une branche d'intégration dédiée à partir de `chore/ubwenzi-monorepo-architecture`, puis importer sélectivement la fondation API D07 vers `backend/api`, le workflow adapté aux workspaces et les ADR-0002/0003. Exclure le package racine D07, tout lockfile divergent et la migration Messaging jusqu'à validation distincte. Aucune fusion dans `main`.
