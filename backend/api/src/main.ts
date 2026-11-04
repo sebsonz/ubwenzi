@@ -1,11 +1,19 @@
 import "reflect-metadata";
+import { resolve } from "node:path";
 import { ValidationPipe } from "@nestjs/common";
 import { NestFactory } from "@nestjs/core";
+import dotenv from "dotenv";
 import {
   FastifyAdapter,
   type NestFastifyApplication,
 } from "@nestjs/platform-fastify";
 import { AppModule } from "./app.module";
+
+// Load the API-local environment file before Nest creates providers.
+// Existing process environment variables take precedence over .env values.
+dotenv.config({
+  path: resolve(__dirname, "../.env"),
+});
 
 async function bootstrap(): Promise<void> {
   const adapter = new FastifyAdapter({
