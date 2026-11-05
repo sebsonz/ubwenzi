@@ -40,7 +40,10 @@ export class WaitlistPostgresRepository implements WaitlistRepository {
         `insert into acquisition.waitlist_email_outbox
           (id, waitlist_entry_id, message_type, payload)
          values ($1, $2, 'VERIFY_EMAIL', $3::jsonb)`,
-        [outboxId, entryId, JSON.stringify({ email: entry.email, verificationTokenHash: entry.verificationTokenHash })],
+        [outboxId, entryId, JSON.stringify({
+          email: entry.email,
+          verificationToken: entry.verificationToken,
+        })],
       );
       await client.query("COMMIT");
       return "created";
@@ -48,7 +51,6 @@ export class WaitlistPostgresRepository implements WaitlistRepository {
       await client.query("ROLLBACK").catch(() => undefined);
       const code = typeof error === "object" && error !== null && "code" in error
         ? String(error.code) : "unknown";
-      // Never expose SQL text, parameters, or driver details to callers.
       throw new ServiceUnavailableException(`Waitlist persistence failed (database code: ${code}).`);
     } finally {
       client.release();
