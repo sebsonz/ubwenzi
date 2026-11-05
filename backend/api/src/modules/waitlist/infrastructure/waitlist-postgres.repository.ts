@@ -56,4 +56,25 @@ export class WaitlistPostgresRepository implements WaitlistRepository {
       client.release();
     }
   }
+
+  async confirmByTokenHash(tokenHash: string): Promise<boolean> {
+    if (!this.pool) {
+      throw new ServiceUnavailableException("Waitlist persistence is not configured.");
+    }
+
+    const result = await this.pool.query(
+      `update acquisition.waitlist_entries
+          set status = 'CONFIRMED',
+              verified_at = now(),
+              verification_token_hash = null,
+              updated_at = now()
+        where verification_token_hash = $1
+          and status = 'PENDING_VERIFICATION'
+          and verification_expires_at > now()
+        returning id`,
+      [tokenHash],
+    );
+
+    return result.rowCount === 1;
+  }
 }
