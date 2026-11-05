@@ -47,7 +47,7 @@ export class WaitlistOutboxWorker {
       const result = await client.query<OutboxMessage>(
         `select id, waitlist_entry_id, payload, attempts
            from acquisition.waitlist_email_outbox
-          where status in ('PENDING', 'FAILED')
+          where status in ('PENDING', 'FAILED', 'PROCESSING')
             and available_at <= now()
             and attempts < 5
           order by created_at
@@ -59,7 +59,8 @@ export class WaitlistOutboxWorker {
       for (const message of result.rows) {
         await client.query(
           `update acquisition.waitlist_email_outbox
-              set status = 'PROCESSING', attempts = attempts + 1
+              set status = 'PROCESSING', attempts = attempts + 1,
+                  available_at = now() + interval '5 minutes'
             where id = $1`,
           [message.id],
         );
