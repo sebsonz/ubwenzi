@@ -42,7 +42,7 @@ export class WaitlistPostgresRepository implements WaitlistRepository {
          values ($1, $2, 'VERIFY_EMAIL', $3::jsonb)`,
         [outboxId, entryId, JSON.stringify({
           email: entry.email,
-          verificationToken: entry.verificationToken,
+          verificationTokenEncrypted: entry.verificationTokenEncrypted,
         })],
       );
       await client.query("COMMIT");
