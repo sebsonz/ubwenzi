@@ -15,7 +15,7 @@ export interface CreateWaitlistEntry {
   consentPurpose: typeof WAITLIST_CONSENT_PURPOSE;
   consentVersion: typeof WAITLIST_CONSENT_VERSION;
   consentedAt: Date;
-  verificationToken: string;
+  verificationTokenEncrypted: string;
   verificationTokenHash: string;
   verificationExpiresAt: Date;
 }
