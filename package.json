@@ -13,8 +13,8 @@
   "scripts": {
     "dev": "nx run web:dev",
     "dev:api": "nx run api:dev",
-    "build": "nx run-many -t build --projects=web,api",
-    "typecheck": "nx run-many -t typecheck --projects=web,api",
+    "build": "nx run-many -t build --projects=web,api,worker",
+    "typecheck": "nx run-many -t typecheck --projects=web,api,worker",
     "lint": "npm run lint --workspace @ubwenzi/web",
     "test": "npm run test --workspace @ubwenzi/web",
     "graph": "nx graph"
