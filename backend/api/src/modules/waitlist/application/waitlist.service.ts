@@ -66,4 +66,18 @@ export class WaitlistService {
 
     return { status: "PENDING_VERIFICATION" };
   }
+
+  async verify(token: string): Promise<{ status: "CONFIRMED" }> {
+    if (!/^[A-Za-z0-9_-]{43}$/.test(token)) {
+      throw new BadRequestException("Verification link is invalid or expired.");
+    }
+
+    const tokenHash = createHash("sha256").update(token).digest("hex");
+    const confirmed = await this.repository.confirmByTokenHash(tokenHash);
+    if (!confirmed) {
+      throw new BadRequestException("Verification link is invalid or expired.");
+    }
+
+    return { status: "CONFIRMED" };
+  }
 }
