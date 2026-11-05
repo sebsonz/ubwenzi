@@ -1,5 +1,5 @@
-import { BadRequestException, Injectable } from "@nestjs/common";
-import { createHash, randomBytes } from "node:crypto";
+import { BadRequestException, Injectable, ServiceUnavailableException } from "@nestjs/common";
+import { createCipheriv, createHash, randomBytes } from "node:crypto";
 import { WAITLIST_CONSENT_PURPOSE, WAITLIST_CONSENT_VERSION } from "../domain/waitlist.types";
 import { WaitlistPostgresRepository } from "../infrastructure/waitlist-postgres.repository";
 
@@ -31,8 +31,27 @@ export class WaitlistService {
       throw new BadRequestException("Consent to waitlist updates is required.");
     }
 
+    const encryptionKey = process.env["WAITLIST_OUTBOX_ENCRYPTION_KEY"];
+    if (!encryptionKey) {
+      throw new ServiceUnavailableException("Waitlist verification is not configured.");
+    }
+    const key = Buffer.from(encryptionKey, "base64");
+    if (key.length !== 32) {
+      throw new ServiceUnavailableException("Waitlist verification is not configured.");
+    }
+
     const token = randomBytes(32).toString("base64url");
+    const iv = randomBytes(12);
+    const cipher = createCipheriv("aes-256-gcm", key, iv);
+    const ciphertext = Buffer.concat([cipher.update(token, "utf8"), cipher.final()]);
+    const encryptedToken = [
+      "v1",
+      iv.toString("base64url"),
+      cipher.getAuthTag().toString("base64url"),
+      ciphertext.toString("base64url"),
+    ].join(":");
     const tokenHash = createHash("sha256").update(token).digest("hex");
+
     await this.repository.createWithVerification({
       email,
       marketCode,
@@ -40,13 +59,11 @@ export class WaitlistService {
       consentPurpose: WAITLIST_CONSENT_PURPOSE,
       consentVersion: WAITLIST_CONSENT_VERSION,
       consentedAt: new Date(),
-      verificationToken: token,
+      verificationTokenEncrypted: encryptedToken,
       verificationTokenHash: tokenHash,
       verificationExpiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000),
     });
 
-    // The endpoint never returns the secret. Only the private D02 delivery
-    // worker may read it from the outbox and must erase it after delivery.
     return { status: "PENDING_VERIFICATION" };
   }
 }
