@@ -15,7 +15,8 @@ create table acquisition.waitlist_entries (
   consented_at timestamptz not null,
   status text not null default 'PENDING_VERIFICATION'
     check (status in ('PENDING_VERIFICATION', 'CONFIRMED', 'INVITED', 'UNSUBSCRIBED', 'DELETED')),
-  verification_token_hash text not null,
+  -- Nullable after confirmation so the bearer token is permanently invalidated.
+  verification_token_hash text,
   verification_expires_at timestamptz not null,
   verified_at timestamptz,
   created_at timestamptz not null default now(),
