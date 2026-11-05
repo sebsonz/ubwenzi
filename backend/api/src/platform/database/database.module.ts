@@ -51,6 +51,6 @@ import { DATABASE_POOL } from "./database.tokens";
     },
     DatabaseService,
   ],
-  exports: [DatabaseService],
+  exports: [DatabaseService, DATABASE_POOL],
 })
 export class DatabaseModule {}
