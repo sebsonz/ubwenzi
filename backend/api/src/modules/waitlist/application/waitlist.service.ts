@@ -1,10 +1,5 @@
-import {
-  BadRequestException,
-  ConflictException,
-  Injectable,
-  ServiceUnavailableException,
-} from "@nestjs/common";
-import { createHash, randomBytes, randomUUID } from "node:crypto";
+import { BadRequestException, Injectable } from "@nestjs/common";
+import { createHash, randomBytes } from "node:crypto";
 import { WAITLIST_CONSENT_PURPOSE, WAITLIST_CONSENT_VERSION } from "../domain/waitlist.types";
 import { WaitlistPostgresRepository } from "../infrastructure/waitlist-postgres.repository";
 
@@ -38,27 +33,20 @@ export class WaitlistService {
 
     const token = randomBytes(32).toString("base64url");
     const tokenHash = createHash("sha256").update(token).digest("hex");
-    const result = await this.repository.createWithVerification({
+    await this.repository.createWithVerification({
       email,
       marketCode,
       isAdultConfirmed: true,
       consentPurpose: WAITLIST_CONSENT_PURPOSE,
       consentVersion: WAITLIST_CONSENT_VERSION,
       consentedAt: new Date(),
+      verificationToken: token,
       verificationTokenHash: tokenHash,
       verificationExpiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000),
     });
 
-    if (result === "already_registered") {
-      // Do not disclose whether an address is already on the list.
-      return { status: "PENDING_VERIFICATION" };
-    }
-    if (!result) {
-      throw new ServiceUnavailableException("Waitlist registration is temporarily unavailable.");
-    }
-
-    // The raw token is never returned to the browser. The D02 outbox worker
-    // delivers the verification message using the stored payload.
+    // The endpoint never returns the secret. Only the private D02 delivery
+    // worker may read it from the outbox and must erase it after delivery.
     return { status: "PENDING_VERIFICATION" };
   }
 }
