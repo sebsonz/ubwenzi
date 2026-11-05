@@ -46,7 +46,7 @@ create table acquisition.waitlist_email_outbox (
 
 create index waitlist_email_outbox_pending_idx
   on acquisition.waitlist_email_outbox (available_at, created_at)
-  where status in ('PENDING', 'FAILED');
+  where status in ('PENDING', 'FAILED', 'PROCESSING');
 
 alter table acquisition.waitlist_entries enable row level security;
 alter table acquisition.waitlist_entries force row level security;
